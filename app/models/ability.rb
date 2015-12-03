@@ -28,5 +28,13 @@ class Ability
     #
     # See the wiki for details:
     # https://github.com/CanCanCommunity/cancancan/wiki/Defining-Abilities
+
+    if user.role == Role::GUEST
+      can :read, User
+    elsif user.role == Role::USER
+      can [:read, :create], User
+    # elsif user.role == Role::ADMIN
+    #   can :manage, User
+    end
   end
 end

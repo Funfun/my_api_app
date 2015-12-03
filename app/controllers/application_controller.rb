@@ -3,6 +3,10 @@ class ApplicationController < ActionController::API
   include CanCan::ControllerAdditions
   before_action :authenticate
 
+  rescue_from CanCan::AccessDenied do |exception|
+    head status: :forbidden
+  end
+
   protected
 
   def current_user

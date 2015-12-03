@@ -63,35 +63,8 @@ describe 'Users API' do
       end
     end
 
-    context 'User with role :guest' do
-      let(:user_role){ FactoryGirl.create(:role, name: 'guest') }
-      let(:user){ FactoryGirl.create(:user, role: user_role) }
-      before do
-        user
-      end
-      it 'can not create an user' do
-        expect do
-          post(
-            '/api/users',
-            headers: headers_with_crendetionals,
-            params: {
-              user: {
-                login: 'alice',
-                password: 'topsecret',
-                password_confirmation: 'topsecret',
-                role_id: user_role.id
-              }
-            }
-          )
-        end.to_not change{User.count}
-
-        expect(response).to have_http_status(:forbidden)
-      end
-    end
-
     context 'User with role :user' do
-      let(:user_role){ FactoryGirl.create(:role, name: 'user') }
-      let(:user){ FactoryGirl.create(:user, role: user_role) }
+      let(:user){ FactoryGirl.create(:user, role: Role::USER) }
       before do
         user
       end
@@ -105,7 +78,7 @@ describe 'Users API' do
                 login: 'alice',
                 password: 'topsecret',
                 password_confirmation: 'topsecret',
-                role_id: user_role.id
+                role: [Role::USER, Role::GUEST].sample
               }
             }
           )
@@ -116,6 +89,31 @@ describe 'Users API' do
 
         expect(body).to include('login' => 'alice')
         expect(body).to include('id' => a_kind_of(Integer))
+      end
+    end
+
+    context 'User with role :guest' do
+      let(:user){ FactoryGirl.create(:user, role: Role::GUEST) }
+      before do
+        user
+      end
+      it 'can not create an user' do
+        expect do
+          post(
+            '/api/users',
+            headers: headers_with_crendetionals,
+            params: {
+              user: {
+                login: 'alice',
+                password: 'topsecret',
+                password_confirmation: 'topsecret',
+                role: Role::USER
+              }
+            }
+          )
+        end.to_not change{User.count}
+
+        expect(response).to have_http_status(:forbidden)
       end
     end
 
