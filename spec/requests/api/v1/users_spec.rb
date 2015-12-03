@@ -63,83 +63,109 @@ describe 'Users API' do
       end
     end
 
-    context 'User with role :user' do
-      let(:user){ FactoryGirl.create(:user, role: Role::USER) }
+    context 'authorized' do
       before do
         user
       end
-      it 'can create an user with role :user or :guest' do
-        expect do
-          post(
-            '/api/users',
-            headers: headers_with_crendetionals,
-            params: {
-              user: {
-                login: 'alice',
-                password: 'topsecret',
-                password_confirmation: 'topsecret',
-                role: [Role::USER, Role::GUEST].sample
+      context 'User with role :user' do
+        let(:user){ FactoryGirl.create(:user, role: Role::USER) }
+        it 'can create an user with role :user or :guest' do
+          expect do
+            post(
+              '/api/users',
+              headers: headers_with_crendetionals,
+              params: {
+                user: {
+                  login: 'alice',
+                  password: 'topsecret',
+                  password_confirmation: 'topsecret',
+                  role: [Role::USER, Role::GUEST].sample
+                }
               }
-            }
-          )
-        end.to change{User.count}.by(1)
+            )
+          end.to change{User.count}.by(1)
 
-        expect(response).to have_http_status(:created)
-        body = JSON.parse(response.body)
+          expect(response).to have_http_status(:created)
+          body = JSON.parse(response.body)
 
-        expect(body).to include('login' => 'alice')
-        expect(body).to include('id' => a_kind_of(Integer))
+          expect(body).to include('login' => 'alice')
+          expect(body).to include('id' => a_kind_of(Integer))
+        end
       end
-    end
-    context 'User with non :admin role' do
-      it 'can not create an user with role :admin' do
-        expect do
-          post(
-            '/api/users',
-            headers: headers_with_crendetionals,
-            params: {
-              user: {
-                login: 'alice',
-                password: 'topsecret',
-                password_confirmation: 'topsecret',
-                role: Role::ADMIN
+      context 'User with non :admin role' do
+        let(:user){ FactoryGirl.create(:user, role: Role::USER) }
+        it 'can not create an user with role :admin' do
+          expect do
+            post(
+              '/api/users',
+              headers: headers_with_crendetionals,
+              params: {
+                user: {
+                  login: 'alice',
+                  password: 'topsecret',
+                  password_confirmation: 'topsecret',
+                  role: Role::ADMIN
+                }
               }
-            }
-          )
-        end.to_not change{User.count}
+            )
+          end.to_not change{User.count}
 
-        expect(response).to have_http_status(:forbidden)
+          expect(response).to have_http_status(:forbidden)
+        end
       end
-    end
 
-    context 'User with role :guest' do
-      let(:user){ FactoryGirl.create(:user, role: Role::GUEST) }
-      before do
-        user
-      end
-      it 'can not create an user' do
-        expect do
-          post(
-            '/api/users',
-            headers: headers_with_crendetionals,
-            params: {
-              user: {
-                login: 'alice',
-                password: 'topsecret',
-                password_confirmation: 'topsecret',
-                role: Role::USER
+      context 'User with role :guest' do
+        let(:user){ FactoryGirl.create(:user, role: Role::GUEST) }
+        before do
+          user
+        end
+        it 'can not create an user' do
+          expect do
+            post(
+              '/api/users',
+              headers: headers_with_crendetionals,
+              params: {
+                user: {
+                  login: 'alice',
+                  password: 'topsecret',
+                  password_confirmation: 'topsecret',
+                  role: Role::USER
+                }
               }
-            }
-          )
-        end.to_not change{User.count}
+            )
+          end.to_not change{User.count}
 
-        expect(response).to have_http_status(:forbidden)
+          expect(response).to have_http_status(:forbidden)
+        end
       end
-    end
 
-    context 'User with role :admin' do
-      it 'can create an user with any role' do
+      context 'User with role :admin' do
+        let(:user){ FactoryGirl.create(:user, role: Role::ADMIN) }
+        before do
+          user
+        end
+        it 'can create an user with any role' do
+          expect do
+            post(
+              '/api/users',
+              headers: headers_with_crendetionals,
+              params: {
+                user: {
+                  login: 'alice',
+                  password: 'topsecret',
+                  password_confirmation: 'topsecret',
+                  role: [Role::USER, Role::GUEST, Role::ADMIN].sample
+                }
+              }
+            )
+          end.to change{User.count}.by(1)
 
+          expect(response).to have_http_status(:created)
+          body = JSON.parse(response.body)
+
+          expect(body).to include('login' => 'alice')
+          expect(body).to include('id' => a_kind_of(Integer))
+        end
       end
     end
   end

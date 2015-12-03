@@ -9,8 +9,8 @@ class Ability
         puts u.role
         u.role != Role::ADMIN
       end
-    # elsif user.role == Role::ADMIN
-    #   can :manage, User
+    elsif user.role == Role::ADMIN
+      can :manage, User
     end
   end
 end
