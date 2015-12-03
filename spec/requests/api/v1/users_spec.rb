@@ -4,12 +4,6 @@ describe 'Users API', :type => :request do
   let(:user){ FactoryGirl.create(:user, id: 1) }
   let(:admin){ FactoryGirl.create(:user, id: 9, login: 'alice', role: Role::ADMIN) }
 
-  let(:headers) do
-    {
-      'Accept' => 'application/vnd.example.v1'
-    }
-  end
-
   let(:headers_with_user_crendetionals) do
     headers.merge(
       'HTTP_AUTHORIZATION' => ActionController::HttpAuthentication::Basic.encode_credentials(user.login, 'secret')
