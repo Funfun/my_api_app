@@ -91,6 +91,26 @@ describe 'Users API' do
         expect(body).to include('id' => a_kind_of(Integer))
       end
     end
+    context 'User with non :admin role' do
+      it 'can not create an user with role :admin' do
+        expect do
+          post(
+            '/api/users',
+            headers: headers_with_crendetionals,
+            params: {
+              user: {
+                login: 'alice',
+                password: 'topsecret',
+                password_confirmation: 'topsecret',
+                role: Role::ADMIN
+              }
+            }
+          )
+        end.to_not change{User.count}
+
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
 
     context 'User with role :guest' do
       let(:user){ FactoryGirl.create(:user, role: Role::GUEST) }
@@ -118,7 +138,7 @@ describe 'Users API' do
     end
 
     context 'User with role :admin' do
-      it 'can create an user' do
+      it 'can create an user with any role' do
 
       end
     end
