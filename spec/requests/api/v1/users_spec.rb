@@ -45,7 +45,12 @@ describe 'Users API' do
     end
 
     context 'User with any role' do
-      it 'retrieves a specific user with id 1'
+      it 'retrieves a specific user with id 1' do
+        get '/api/users/1', headers: headers_with_crendetionals
+
+        expect(response).to have_http_status(:success)
+        expect(JSON.parse(response.body)).to eq({'id' => user.id, 'login' => user.login})
+      end
     end
   end
 
