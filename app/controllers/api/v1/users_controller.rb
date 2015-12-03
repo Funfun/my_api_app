@@ -5,6 +5,10 @@ module Api
         users = User.all
         render json: users
       end
+
+      def show
+
+      end
     end
   end
 end

@@ -6,6 +6,13 @@ describe 'Users API' do
       'Accept' => 'application/vnd.example.v1'
     }
   }
+  let(:headers_with_crendetionals){
+    headers.merge(
+      'HTTP_AUTHORIZATION' => ActionController::HttpAuthentication::Basic.encode_credentials(user.login, 'secret')
+    )
+  }
+  let(:user){ FactoryGirl.create(:user, id: 1) }
+
   describe 'GET /api/users' do
     context 'anonymous' do
       it 'forbidden to access this resource' do
@@ -17,12 +24,7 @@ describe 'Users API' do
 
     context 'User with any role' do
       it 'sends a list of users' do
-        user = FactoryGirl.create(:user)
-
-        headers.merge!(
-          'HTTP_AUTHORIZATION' => ActionController::HttpAuthentication::Basic.encode_credentials(user.login, 'secret')
-        )
-        get '/api/users', headers: headers
+        get '/api/users', headers: headers_with_crendetionals
 
         expect(response).to have_http_status(:success)
         expect(JSON.parse(response.body)).to eq([{'id' => user.id, 'login' => user.login}])
@@ -31,8 +33,14 @@ describe 'Users API' do
   end
 
   describe 'GET /api/users/1' do
+    before do
+      user
+    end
     context 'anonymous' do
       it 'forbidden to access this resource' do
+        get '/api/users/1', headers: headers
+
+        expect(response).to have_http_status(:unauthorized)
       end
     end
 
