@@ -57,6 +57,9 @@ describe 'Users API' do
   describe 'POST /api/users' do
     context 'anonymous' do
       it 'forbidden to access this resource' do
+        post '/api/users', headers: headers, params: {login: 'alice'}
+
+        expect(response).to have_http_status(:unauthorized)
       end
     end
 
