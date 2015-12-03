@@ -29,7 +29,7 @@ describe 'Users API', :type => :request do
         get '/api/users', headers: headers_with_crendetionals
 
         expect(response).to have_http_status(:success)
-        expect(json).to eq([{'id' => user.id, 'login' => user.login}])
+        expect(json).to eq([{'id' => user.id, 'login' => user.login, 'role' => user.role}])
       end
     end
   end
@@ -48,7 +48,7 @@ describe 'Users API', :type => :request do
         get '/api/users/1', headers: headers_with_crendetionals
 
         expect(response).to have_http_status(:success)
-        expect(json).to eq({'id' => user.id, 'login' => user.login})
+        expect(json).to eq({'id' => user.id, 'login' => user.login, 'role' => user.role})
       end
     end
   end
@@ -65,6 +65,8 @@ describe 'Users API', :type => :request do
     context 'authorized' do
       context 'User with role :user' do
         let!(:user){ FactoryGirl.create(:user, role: Role::USER) }
+        let(:role){ [Role::USER, Role::GUEST].sample }
+
         it 'can create an user with role :user or :guest' do
           expect do
             post(
@@ -75,7 +77,7 @@ describe 'Users API', :type => :request do
                   login: 'alice',
                   password: 'topsecret',
                   password_confirmation: 'topsecret',
-                  role: [Role::USER, Role::GUEST].sample
+                  role: role
                 }
               }
             )
@@ -83,8 +85,7 @@ describe 'Users API', :type => :request do
 
           expect(response).to have_http_status(:created)
 
-          expect(json).to include('login' => 'alice')
-          expect(json).to include('id' => a_kind_of(Integer))
+          expect(json).to include('login' => 'alice', 'role' => role, 'id' => a_kind_of(Integer))
         end
       end
       context 'User with non :admin role' do
@@ -133,7 +134,7 @@ describe 'Users API', :type => :request do
 
       context 'User with role :admin' do
         let!(:user){ FactoryGirl.create(:user, role: Role::ADMIN) }
-
+        let(:role){ [Role::USER, Role::GUEST, Role::ADMIN].sample }
         it 'can create an user with any role' do
           expect do
             post(
@@ -144,7 +145,7 @@ describe 'Users API', :type => :request do
                   login: 'alice',
                   password: 'topsecret',
                   password_confirmation: 'topsecret',
-                  role: [Role::USER, Role::GUEST, Role::ADMIN].sample
+                  role: role
                 }
               }
             )
@@ -152,8 +153,7 @@ describe 'Users API', :type => :request do
 
           expect(response).to have_http_status(:created)
 
-          expect(json).to include('login' => 'alice')
-          expect(json).to include('id' => a_kind_of(Integer))
+          expect(json).to include('login' => 'alice', 'role' => role, 'id' => a_kind_of(Integer))
         end
       end
     end
