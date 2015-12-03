@@ -56,7 +56,7 @@ describe 'Users API', :type => :request do
   describe 'POST /api/users' do
     context 'anonymous' do
       it 'forbidden to access this resource' do
-        post '/api/users', headers: headers, params: {login: 'alice'}
+        post '/api/users', headers: headers
 
         expect(response).to have_http_status(:unauthorized)
       end
@@ -162,6 +162,9 @@ describe 'Users API', :type => :request do
   describe 'PUT /api/users/1' do
     context 'anonymous' do
       it 'forbidden to access this resource' do
+        put '/api/users/1', headers: headers
+
+        expect(response).to have_http_status(:unauthorized)
       end
     end
 
