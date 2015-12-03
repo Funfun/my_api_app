@@ -31,7 +31,13 @@ describe 'Epics API' do
     end
 
     context 'User with any role' do
-      it 'retrieves a specific epic with id 1'
+      let!(:epic){ FactoryGirl.create(:epic) }
+      it 'retrieves a specific epic with id 1' do
+        get '/api/epics/1', headers: headers_with_user_crendetionals
+
+        expect(response).to have_http_status(:success)
+        expect(json).to eq({'id' => epic.id, 'title' => epic.title, 'description' => epic.description, 'priority' => epic.priority})
+      end
     end
   end
 
