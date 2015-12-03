@@ -11,12 +11,22 @@ describe 'Users API' do
       it 'forbidden to access this resource' do
         get '/api/users', headers: headers
 
-        expect(response).to have_http_status(:forbidden)
+        expect(response).to have_http_status(:unauthorized)
       end
     end
 
     context 'User with any role' do
-      it 'sends a list of users'
+      it 'sends a list of users' do
+        user = FactoryGirl.create(:user)
+
+        headers.merge!(
+          'HTTP_AUTHORIZATION' => ActionController::HttpAuthentication::Basic.encode_credentials(user.login, 'secret')
+        )
+        get '/api/users', headers: headers
+
+        expect(response).to have_http_status(:success)
+        expect(JSON.parse(response.body)).to eq([{'id' => user.id, 'login' => user.login}])
+      end
     end
   end
 
