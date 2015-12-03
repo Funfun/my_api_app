@@ -19,7 +19,17 @@ module Api
       end
 
       def update
+        user = User.find(params[:id])
+        user.update_attributes!(user_params)
 
+        head :no_content
+      end
+
+      def destroy
+        user = User.find(params[:id])
+        user.destroy
+
+        head :no_content
       end
 
       private
