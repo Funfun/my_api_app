@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::API
   include ActionController::HttpAuthentication::Basic::ControllerMethods
+  include CanCan::ControllerAdditions
   before_action :authenticate
 
   protected

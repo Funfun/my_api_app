@@ -63,7 +63,7 @@ describe 'Users API' do
       end
     end
 
-    xcontext 'User with role :guest' do
+    context 'User with role :guest' do
       let(:user_role){ FactoryGirl.create(:role, name: 'guest') }
       let(:user){ FactoryGirl.create(:user, role: user_role) }
       before do
