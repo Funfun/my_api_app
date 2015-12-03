@@ -1,17 +1,19 @@
 require 'rails_helper'
 
-describe 'Users API' do
-  let(:headers){
+describe 'Users API', :type => :request do
+  let(:user){ FactoryGirl.create(:user, id: 1) }
+
+  let(:headers) do
     {
       'Accept' => 'application/vnd.example.v1'
     }
-  }
-  let(:headers_with_crendetionals){
+  end
+
+  let(:headers_with_crendetionals) do
     headers.merge(
       'HTTP_AUTHORIZATION' => ActionController::HttpAuthentication::Basic.encode_credentials(user.login, 'secret')
     )
-  }
-  let(:user){ FactoryGirl.create(:user, id: 1) }
+  end
 
   describe 'GET /api/users' do
     context 'anonymous' do
@@ -27,15 +29,12 @@ describe 'Users API' do
         get '/api/users', headers: headers_with_crendetionals
 
         expect(response).to have_http_status(:success)
-        expect(JSON.parse(response.body)).to eq([{'id' => user.id, 'login' => user.login}])
+        expect(json).to eq([{'id' => user.id, 'login' => user.login}])
       end
     end
   end
 
   describe 'GET /api/users/1' do
-    before do
-      user
-    end
     context 'anonymous' do
       it 'forbidden to access this resource' do
         get '/api/users/1', headers: headers
@@ -49,7 +48,7 @@ describe 'Users API' do
         get '/api/users/1', headers: headers_with_crendetionals
 
         expect(response).to have_http_status(:success)
-        expect(JSON.parse(response.body)).to eq({'id' => user.id, 'login' => user.login})
+        expect(json).to eq({'id' => user.id, 'login' => user.login})
       end
     end
   end
@@ -64,11 +63,8 @@ describe 'Users API' do
     end
 
     context 'authorized' do
-      before do
-        user
-      end
       context 'User with role :user' do
-        let(:user){ FactoryGirl.create(:user, role: Role::USER) }
+        let!(:user){ FactoryGirl.create(:user, role: Role::USER) }
         it 'can create an user with role :user or :guest' do
           expect do
             post(
@@ -86,14 +82,13 @@ describe 'Users API' do
           end.to change{User.count}.by(1)
 
           expect(response).to have_http_status(:created)
-          body = JSON.parse(response.body)
 
-          expect(body).to include('login' => 'alice')
-          expect(body).to include('id' => a_kind_of(Integer))
+          expect(json).to include('login' => 'alice')
+          expect(json).to include('id' => a_kind_of(Integer))
         end
       end
       context 'User with non :admin role' do
-        let(:user){ FactoryGirl.create(:user, role: Role::USER) }
+        let!(:user){ FactoryGirl.create(:user, role: Role::USER) }
         it 'can not create an user with role :admin' do
           expect do
             post(
@@ -115,10 +110,7 @@ describe 'Users API' do
       end
 
       context 'User with role :guest' do
-        let(:user){ FactoryGirl.create(:user, role: Role::GUEST) }
-        before do
-          user
-        end
+        let!(:user){ FactoryGirl.create(:user, role: Role::GUEST) }
         it 'can not create an user' do
           expect do
             post(
@@ -140,10 +132,8 @@ describe 'Users API' do
       end
 
       context 'User with role :admin' do
-        let(:user){ FactoryGirl.create(:user, role: Role::ADMIN) }
-        before do
-          user
-        end
+        let!(:user){ FactoryGirl.create(:user, role: Role::ADMIN) }
+
         it 'can create an user with any role' do
           expect do
             post(
@@ -161,10 +151,9 @@ describe 'Users API' do
           end.to change{User.count}.by(1)
 
           expect(response).to have_http_status(:created)
-          body = JSON.parse(response.body)
 
-          expect(body).to include('login' => 'alice')
-          expect(body).to include('id' => a_kind_of(Integer))
+          expect(json).to include('login' => 'alice')
+          expect(json).to include('id' => a_kind_of(Integer))
         end
       end
     end
