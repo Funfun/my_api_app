@@ -63,9 +63,59 @@ describe 'Users API' do
       end
     end
 
-    context 'User with role :user' do
-      it 'can create an user with role :user or :guest' do
+    xcontext 'User with role :guest' do
+      let(:user_role){ FactoryGirl.create(:role, name: 'guest') }
+      let(:user){ FactoryGirl.create(:user, role: user_role) }
+      before do
+        user
+      end
+      it 'can not create an user' do
+        expect do
+          post(
+            '/api/users',
+            headers: headers_with_crendetionals,
+            params: {
+              user: {
+                login: 'alice',
+                password: 'topsecret',
+                password_confirmation: 'topsecret',
+                role_id: user_role.id
+              }
+            }
+          )
+        end.to_not change{User.count}
 
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    context 'User with role :user' do
+      let(:user_role){ FactoryGirl.create(:role, name: 'user') }
+      let(:user){ FactoryGirl.create(:user, role: user_role) }
+      before do
+        user
+      end
+      it 'can create an user with role :user or :guest' do
+        expect do
+          post(
+            '/api/users',
+            headers: headers_with_crendetionals,
+            params: {
+              user: {
+                login: 'alice',
+                password: 'topsecret',
+                password_confirmation: 'topsecret',
+                role_id: user_role.id
+              }
+            }
+          )
+        end.to change{User.count}.by(1)
+
+        expect(response).to have_http_status(:created)
+        body = JSON.parse(response.body)
+
+        expect(body).to include('login' => 'alice')
+        expect(body).to include('id' => a_kind_of(Integer))
       end
     end
 
