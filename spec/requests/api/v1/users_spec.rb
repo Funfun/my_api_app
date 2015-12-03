@@ -1,9 +1,17 @@
 require 'rails_helper'
 
 describe 'Users API' do
+  let(:headers){
+    {
+      'Accept' => 'application/vnd.example.v1'
+    }
+  }
   describe 'GET /api/users' do
     context 'anonymous' do
       it 'forbidden to access this resource' do
+        get '/api/users', headers: headers
+
+        expect(response).to have_http_status(:forbidden)
       end
     end
 
