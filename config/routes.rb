@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   namespace :api, defaults: {format: 'json'} do
     scope module: 'v1', constraints: ApiConstraints.new(version: 1)  do
       resources :users
+      resources :epics
     end
   end
 end
