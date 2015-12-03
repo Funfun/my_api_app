@@ -63,8 +63,16 @@ describe 'Users API' do
       end
     end
 
+    context 'User with role :user' do
+      it 'can create an user with role :user or :guest' do
+
+      end
+    end
+
     context 'User with role :admin' do
-      it 'creates an user'
+      it 'can create an user' do
+
+      end
     end
   end
 
