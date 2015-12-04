@@ -14,7 +14,7 @@ describe 'stories API' do
       let(:epic){ FactoryGirl.create(:epic) }
       let!(:story){ FactoryGirl.create(:story, epic: epic) }
 
-      it 'sends a list of stories' do
+      it 'send a list of stories' do
         get "/api/epics/#{epic.id}/stories", headers: headers_with_random_crendetionals
 
         expect(response).to have_http_status(:success)
@@ -26,6 +26,9 @@ describe 'stories API' do
   describe 'POST /api/epics/1/stories' do
     context 'anonymous' do
       it 'forbidden to access this resource' do
+        post '/api/epics/1/stories', headers: headers
+
+        expect(response).to have_http_status(:unauthorized)
       end
     end
 

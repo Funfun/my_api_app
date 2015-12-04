@@ -6,6 +6,10 @@ module Api
 
         render json: stories
       end
+
+      def create
+
+      end
     end
   end
 end
