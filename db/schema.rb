@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151203231741) do
+ActiveRecord::Schema.define(version: 20151204112949) do
 
   create_table "epics", force: :cascade do |t|
     t.string   "title"
@@ -23,6 +23,14 @@ ActiveRecord::Schema.define(version: 20151203231741) do
 
   create_table "roles", force: :cascade do |t|
     t.string   "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "stories", force: :cascade do |t|
+    t.text     "body"
+    t.integer  "status"
+    t.integer  "epic_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
