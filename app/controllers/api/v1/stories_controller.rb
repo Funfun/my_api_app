@@ -4,9 +4,7 @@ module Api
       load_and_authorize_resource except: :create
 
       def index
-        stories = Story.where(epic_id: params[:epic_id])
-
-        render json: stories
+        render json: @stories
       end
 
       def create
@@ -16,21 +14,27 @@ module Api
       end
 
       def show
-        story = Story.find(params[:id])
-        render json: story
+        render json: @story
       end
 
       def update
-
+        @story.update_attributes!(update_story_params)
+        render json: @story
       end
 
       def destroy
+        @story.destroy
 
+        head :no_content
       end
 
       private
       def create_story_params
         params.require(:story).permit(:body).merge(epic_id: params[:epic_id], user_id: current_user.id)
+      end
+
+      def update_story_params
+        params.require(:story).permit(:body, :status)
       end
     end
   end

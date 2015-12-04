@@ -18,6 +18,7 @@ class Ability
         u.role != Role::ADMIN
       end
       can :read, Epic
+      can :destroy, Story, user_id: user.id
     elsif user.role == Role::ADMIN
       can :manage, :all
     end

@@ -116,15 +116,16 @@ describe 'stories API' do
       it 'updates only authored story' do
         story.user_id = user.id
         story.save
-        put "/api/epics/#{epic.id}/stories/#{story.id}", headers: headers_with_user_crendetionals
+        put "/api/epics/#{epic.id}/stories/#{story.id}", headers: headers_with_user_crendetionals, params: {story: {body: 'new data'}}
 
-        expect(response).to have_http_status(:no_content)
+        expect(response).to have_http_status(:success)
+        expect(json).to include('id' => story.id)
       end
 
       it 'can not update others stories' do
         story.user_id = user.id + 1000
         story.save
-        put "/api/epics/#{epic.id}/stories/#{story.id}", headers: headers_with_user_crendetionals
+        put "/api/epics/#{epic.id}/stories/#{story.id}", headers: headers_with_user_crendetionals, params: {story: {body: 'new data'}}
         expect(response).to have_http_status(:forbidden)
       end
     end
@@ -133,8 +134,9 @@ describe 'stories API' do
       it 'updates any story' do
         story.user_id = admin.id + 1000
         story.save
-        put "/api/epics/#{epic.id}/stories/#{story.id}", headers: headers_with_admin_crendetionals
-        expect(response).to have_http_status(:no_content)
+        put "/api/epics/#{epic.id}/stories/#{story.id}", headers: headers_with_admin_crendetionals, params: {story: {body: 'new data'}}
+        expect(response).to have_http_status(:success)
+        expect(json).to include('id' => story.id)
       end
     end
   end
@@ -161,6 +163,14 @@ describe 'stories API' do
 
     context 'User with role :user' do
       it 'deletes only authored story' do
+        story.user_id = user.id
+        story.save
+        delete "/api/epics/#{epic.id}/stories/#{story.id}", headers: headers_with_user_crendetionals
+
+        expect(response).to have_http_status(:no_content)
+      end
+
+      it 'can not delete others storie' do
 
       end
     end
