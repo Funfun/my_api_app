@@ -13,7 +13,7 @@ module Api
       end
 
       def show
-        story = Story.find(id: params[:id])
+        story = Story.find(params[:id])
         render json: story
       end
 

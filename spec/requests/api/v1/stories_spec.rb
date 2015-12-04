@@ -73,7 +73,15 @@ describe 'stories API' do
     end
 
     context 'User with any role' do
-      it 'retrieves a specific story'
+      let(:expected_body) do
+        {'body' => story.body, 'status' => story.status, 'epic_id' => epic.id, 'id' => story.id}
+      end
+      it 'retrieves a specific story' do
+        get "/api/epics/#{epic.id}/stories/#{story.id}", headers: headers_with_random_crendetionals
+
+        expect(response).to have_http_status(:success)
+        expect(json).to include(expected_body)
+      end
     end
   end
 
