@@ -98,7 +98,20 @@ describe 'stories API' do
     end
 
     context 'User with role :user' do
-      it 'updates only authored story'
+      it 'updates only authored story' do
+        story.user_id = user.id
+        story.save
+        put "/api/epics/#{epic.id}/stories/#{story.id}", headers: headers_with_user_crendetionals
+
+        expect(response).to have_http_status(:no_content)
+      end
+
+      it 'can not update others stories' do
+        story.user_id = random_user.id
+        story.save
+        put "/api/epics/#{epic.id}/stories/#{story.id}", headers: headers_with_user_crendetionals
+        expect(response).to have_http_status(:forbidden)
+      end
     end
 
     context 'User with role :admin' do
