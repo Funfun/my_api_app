@@ -61,8 +61,14 @@ describe 'stories API' do
   end
 
   describe 'GET /api/epics/1/stories/2' do
+    let(:epic){ FactoryGirl.create(:epic) }
+    let(:story){ FactoryGirl.create(:story, epic: epic) }
+
     context 'anonymous' do
       it 'forbidden to access this resource' do
+        get "/api/epics/#{epic.id}/stories/#{story.id}", headers: headers
+
+        expect(response).to have_http_status(:unauthorized)
       end
     end
 

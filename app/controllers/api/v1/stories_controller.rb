@@ -12,6 +12,11 @@ module Api
         render json: story, status: :created
       end
 
+      def show
+        story = Story.find(id: params[:id])
+        render json: story
+      end
+
       private
       def create_story_params
         params.require(:story).permit(:body).merge(epic_id: params[:epic_id])
