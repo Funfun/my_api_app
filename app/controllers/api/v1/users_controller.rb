@@ -15,7 +15,7 @@ module Api
 
       def create
         user = User.create!(user_params)
-        render json: user, status: :created
+        render json: user, status: :created, location: api_epic_url(user.id)
       end
 
       def update

@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe 'stories API' do
-  describe 'GET /epics/1/stories' do
+  describe 'GET /api/epics/1/stories' do
     context 'anonymous' do
       it 'forbidden to access this resource' do
       end
@@ -12,7 +12,7 @@ describe 'stories API' do
     end
   end
 
-  describe 'POST /epics/1/stories' do
+  describe 'POST /api/epics/1/stories' do
     context 'anonymous' do
       it 'forbidden to access this resource' do
       end
@@ -23,7 +23,7 @@ describe 'stories API' do
     end
   end
 
-  describe 'GET /epics/1/stories/2' do
+  describe 'GET /api/epics/1/stories/2' do
     context 'anonymous' do
       it 'forbidden to access this resource' do
       end
@@ -34,7 +34,7 @@ describe 'stories API' do
     end
   end
 
-  describe 'PUT /epics/1/stories/2' do
+  describe 'PUT /api/epics/1/stories/2' do
     context 'anonymous' do
       it 'forbidden to access this resource' do
       end
@@ -49,7 +49,7 @@ describe 'stories API' do
     end
   end
 
-  describe 'DELETE /epics/1/stories/2' do
+  describe 'DELETE /api/epics/1/stories/2' do
     context 'anonymous' do
       it 'forbidden to access this resource' do
       end
