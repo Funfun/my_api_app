@@ -5,8 +5,6 @@ module Api
 
     # GET /api/v1/epics
     def index
-      @epics = Epic.all
-
       render json: @epics
     end
 
