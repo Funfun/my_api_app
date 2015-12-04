@@ -4,6 +4,9 @@ describe 'stories API' do
   describe 'GET /api/epics/1/stories' do
     context 'anonymous' do
       it 'forbidden to access this resource' do
+        get '/api/epics/1/stories', headers: headers
+
+        expect(response).to have_http_status(:unauthorized)
       end
     end
 
