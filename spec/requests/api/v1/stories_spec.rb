@@ -171,12 +171,20 @@ describe 'stories API' do
       end
 
       it 'can not delete others storie' do
+        story.user_id = user.id + 1000
+        story.save
+        delete "/api/epics/#{epic.id}/stories/#{story.id}", headers: headers_with_user_crendetionals
 
+        expect(response).to have_http_status(:forbidden)
       end
     end
 
     context 'User with role :admin' do
-      it 'deletes any story'
+      it 'deletes any story' do
+        delete "/api/epics/#{epic.id}/stories/#{story.id}", headers: headers_with_admin_crendetionals
+
+        expect(response).to have_http_status(:no_content)
+      end
     end
   end
 end
