@@ -9,12 +9,20 @@ module Api
 
       def create
         story = Story.create!(create_story_params)
-        render json: story, status: :created
+        render json: story, status: :created, location: api_epic_story_url(id: story.id, epic_id: story.epic_id)
       end
 
       def show
         story = Story.find(params[:id])
         render json: story
+      end
+
+      def update
+
+      end
+
+      def destroy
+
       end
 
       private
