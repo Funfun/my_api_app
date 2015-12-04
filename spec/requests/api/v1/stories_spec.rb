@@ -43,7 +43,7 @@ describe 'stories API' do
       {'body' => story_params[:story][:body], 'status' => 1, 'epic_id' => 1, 'id' => be_kind_of(Integer)}
     end
     context 'User with role :guest' do
-      it 'creates a story' do
+      it 'can not create a story' do
         post '/api/epics/1/stories', headers: headers_with_guest_crendetionals, params: story_params
 
         expect(response).to have_http_status(:forbidden)
