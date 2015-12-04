@@ -11,7 +11,15 @@ describe 'stories API' do
     end
 
     context 'User with any role' do
-      it 'sends a list of stories'
+      let(:epic){ FactoryGirl.create(:epic) }
+      let!(:story){ FactoryGirl.create(:story, epic: epic) }
+
+      it 'sends a list of stories' do
+        get "/api/epics/#{epic.id}/stories", headers: headers_with_random_crendetionals
+
+        expect(response).to have_http_status(:success)
+        expect(json.length).to eq(1)
+      end
     end
   end
 
