@@ -13,7 +13,7 @@ describe 'Epics API' do
     context 'User with any role' do
       let!(:epic){ FactoryGirl.create(:epic) }
       it 'sends a list of epics' do
-        get '/api/epics', headers: headers_with_user_crendetionals
+        get '/api/epics', headers: headers_with_random_crendetionals
 
         expect(response).to have_http_status(:success)
         expect(json.length).to eq(1)
@@ -33,7 +33,7 @@ describe 'Epics API' do
     context 'User with any role' do
       let!(:epic){ FactoryGirl.create(:epic) }
       it 'retrieves a specific epic with id 1' do
-        get '/api/epics/1', headers: headers_with_user_crendetionals
+        get '/api/epics/1', headers: headers_with_random_crendetionals
 
         expect(response).to have_http_status(:success)
         expect(json).to eq({'id' => epic.id, 'title' => epic.title, 'description' => epic.description, 'priority' => epic.priority})
@@ -50,42 +50,46 @@ describe 'Epics API' do
       end
     end
 
-    context 'User with role :user or :admin' do
-      it 'creates an epic'
-    end
-  end
+    context 'User with role :admin' do
+      it 'can create an epic' do
+        expect do
+          post(
+            '/api/epics',
+            headers: headers_with_admin_crendetionals,
+            params: {
+              epic: {
+                title: 'sample',
+                description: 'foo',
+                priority: 2
+              }
+            }
+          )
+        end.to change{Epic.count}.by(1)
 
-  describe 'PUT /api/epics/1' do
-    context 'anonymous' do
-      it 'forbidden to access this resource' do
-        put '/api/epics/1', headers: headers, params: {epic: {}}
+        expect(response).to have_http_status(:created)
 
-        expect(response).to have_http_status(:unauthorized)
+        expect(json).to include({'id' => a_kind_of(Integer), 'title' => 'sample', 'description' => 'foo', 'priority' => 2})
       end
     end
 
-    context 'User with role :user' do
-      it 'updates only authored epic'
-    end
-    context 'User with role :admin' do
-      it 'updates any epic'
-    end
-  end
+    context 'User with non :admin role' do
+      it 'can create an epic' do
+        expect do
+          post(
+            '/api/epics',
+            headers: headers_with_user_crendetionals,
+            params: {
+              epic: {
+                title: 'sample',
+                description: 'foo',
+                priority: 2
+              }
+            }
+          )
+        end.to_not change{Epic.count}
 
-  describe 'DELETE /api/epics/1' do
-    context 'anonymous' do
-      it 'forbidden to access this resource' do
-        delete '/api/epics/1', headers: headers
-
-        expect(response).to have_http_status(:unauthorized)
+        expect(response).to have_http_status(:forbidden)
       end
-    end
-
-    context 'User with role :user' do
-      it 'deletes only authored epic'
-    end
-    context 'User with role :admin' do
-      it 'deletes any epic'
     end
   end
 end

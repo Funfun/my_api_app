@@ -12,7 +12,7 @@ describe 'Users API', :type => :request do
 
     context 'User with any role' do
       it 'sends a list of users' do
-        get '/api/users', headers: headers_with_user_crendetionals
+        get '/api/users', headers: headers_with_random_crendetionals
 
         expect(response).to have_http_status(:success)
         expect(json.length).to eq(1)
@@ -31,10 +31,10 @@ describe 'Users API', :type => :request do
 
     context 'User with any role' do
       it 'retrieves a specific user with id 1' do
-        get '/api/users/1', headers: headers_with_user_crendetionals
+        get '/api/users/1', headers: headers_with_random_crendetionals
 
         expect(response).to have_http_status(:success)
-        expect(json).to eq({'id' => user.id, 'login' => user.login, 'role' => user.role})
+        expect(json).to eq({'id' => random_user.id, 'login' => random_user.login, 'role' => random_user.role})
       end
     end
   end
@@ -50,24 +50,21 @@ describe 'Users API', :type => :request do
 
     context 'authorized' do
       context 'User with role :user' do
-        let!(:user){ FactoryGirl.create(:user, role: Role::USER) }
         let(:role){ [Role::USER, Role::GUEST].sample }
 
         it 'can create an user with role :user or :guest' do
-          expect do
-            post(
-              '/api/users',
-              headers: headers_with_user_crendetionals,
-              params: {
-                user: {
-                  login: 'alice',
-                  password: 'topsecret',
-                  password_confirmation: 'topsecret',
-                  role: role
-                }
+          post(
+            '/api/users',
+            headers: headers_with_user_crendetionals,
+            params: {
+              user: {
+                login: 'alice',
+                password: 'topsecret',
+                password_confirmation: 'topsecret',
+                role: role
               }
-            )
-          end.to change{User.count}.by(1)
+            }
+          )
 
           expect(response).to have_http_status(:created)
 
@@ -75,44 +72,38 @@ describe 'Users API', :type => :request do
         end
       end
       context 'User with non :admin role' do
-        let!(:user){ FactoryGirl.create(:user, role: Role::USER) }
         it 'can not create an user with role :admin' do
-          expect do
-            post(
-              '/api/users',
-              headers: headers_with_user_crendetionals,
-              params: {
-                user: {
-                  login: 'alice',
-                  password: 'topsecret',
-                  password_confirmation: 'topsecret',
-                  role: Role::ADMIN
-                }
+          post(
+            '/api/users',
+            headers: headers_with_user_crendetionals,
+            params: {
+              user: {
+                login: 'alice',
+                password: 'topsecret',
+                password_confirmation: 'topsecret',
+                role: Role::ADMIN
               }
-            )
-          end.to_not change{User.count}
+            }
+          )
 
           expect(response).to have_http_status(:forbidden)
         end
       end
 
       context 'User with role :guest' do
-        let!(:user){ FactoryGirl.create(:user, role: Role::GUEST) }
         it 'can not create an user' do
-          expect do
-            post(
-              '/api/users',
-              headers: headers_with_user_crendetionals,
-              params: {
-                user: {
-                  login: 'alice',
-                  password: 'topsecret',
-                  password_confirmation: 'topsecret',
-                  role: Role::USER
-                }
+          post(
+            '/api/users',
+            headers: headers_with_guest_crendetionals,
+            params: {
+              user: {
+                login: 'alice',
+                password: 'topsecret',
+                password_confirmation: 'topsecret',
+                role: Role::USER
               }
-            )
-          end.to_not change{User.count}
+            }
+          )
 
           expect(response).to have_http_status(:forbidden)
         end
@@ -194,7 +185,7 @@ describe 'Users API', :type => :request do
 
     context 'User with role :admin' do
       before do
-        user
+        random_user
       end
       it 'can delete any user' do
         delete '/api/users/1', headers: headers_with_admin_crendetionals
@@ -205,7 +196,7 @@ describe 'Users API', :type => :request do
 
     context 'User with non :admin role' do
       it 'can not delete non of user' do
-        delete '/api/users/1', headers: headers_with_user_crendetionals
+        delete "/api/users/#{user.id}", headers: headers_with_user_crendetionals
 
         expect(response).to have_http_status(:forbidden)
       end
