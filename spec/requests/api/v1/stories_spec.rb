@@ -32,8 +32,31 @@ describe 'stories API' do
       end
     end
 
-    context 'User with role :user or :admin' do
-      it 'creates a story'
+    let(:story_params) do
+      {
+        story: {
+          body: 'Sample body'
+        }
+      }
+    end
+    let(:expected_body) do
+      {'body' => story_params[:story][:body], 'status' => 1, 'epic_id' => 1, 'id' => be_kind_of(Integer)}
+    end
+    context 'User with role :user' do
+      it 'creates a story' do
+        post '/api/epics/1/stories', headers: headers_with_user_crendetionals, params: story_params
+
+        expect(response).to have_http_status(:created)
+        expect(json).to include(expected_body)
+      end
+    end
+    context 'User with role :admin' do
+      it 'creates a story' do
+        post '/api/epics/1/stories', headers: headers_with_admin_crendetionals, params: story_params
+
+        expect(response).to have_http_status(:created)
+        expect(json).to include(expected_body)
+      end
     end
   end
 
