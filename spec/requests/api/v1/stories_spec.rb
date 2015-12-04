@@ -104,6 +104,14 @@ describe 'stories API' do
       end
     end
 
+    context 'User with role :guest' do
+      it 'creates a story' do
+        put "/api/epics/#{epic.id}/stories/#{story.id}", headers: headers_with_guest_crendetionals
+
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
     context 'User with role :user' do
       it 'updates only authored story' do
         story.user_id = user.id
@@ -114,7 +122,7 @@ describe 'stories API' do
       end
 
       it 'can not update others stories' do
-        story.user_id = random_user.id
+        story.user_id = user.id + 1000
         story.save
         put "/api/epics/#{epic.id}/stories/#{story.id}", headers: headers_with_user_crendetionals
         expect(response).to have_http_status(:forbidden)
@@ -122,7 +130,12 @@ describe 'stories API' do
     end
 
     context 'User with role :admin' do
-      it 'updates any story'
+      it 'updates any story' do
+        story.user_id = admin.id + 1000
+        story.save
+        put "/api/epics/#{epic.id}/stories/#{story.id}", headers: headers_with_admin_crendetionals
+        expect(response).to have_http_status(:no_content)
+      end
     end
   end
 
