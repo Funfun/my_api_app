@@ -105,7 +105,7 @@ describe 'stories API' do
     end
 
     context 'User with role :guest' do
-      it 'creates a story' do
+      it 'can not update a story' do
         put "/api/epics/#{epic.id}/stories/#{story.id}", headers: headers_with_guest_crendetionals
 
         expect(response).to have_http_status(:forbidden)
@@ -151,8 +151,18 @@ describe 'stories API' do
       end
     end
 
+    context 'User with role :guest' do
+      it 'can not delete a story' do
+        delete "/api/epics/#{epic.id}/stories/#{story.id}", headers: headers_with_guest_crendetionals
+
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
     context 'User with role :user' do
-      it 'deletes only authored story'
+      it 'deletes only authored story' do
+
+      end
     end
 
     context 'User with role :admin' do
