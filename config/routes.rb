@@ -8,6 +8,7 @@ Rails.application.routes.draw do
       resources :epics do
         resources :stories
       end
+      resources :sessions, only: [:create]
     end
   end
 end
