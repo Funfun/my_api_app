@@ -25,6 +25,12 @@ module Api
       end
     end
 
+    def destroy
+      @epic.destroy
+
+      head :no_content
+    end
+
     private
       # Only allow a trusted parameter "white list" through.
       def epic_params

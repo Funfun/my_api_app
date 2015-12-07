@@ -92,4 +92,40 @@ describe 'Epics API' do
       end
     end
   end
+
+  describe 'DELETE /api/epics/1' do
+    let(:epic){ FactoryGirl.create(:epic) }
+
+    context 'anonymous' do
+      it 'forbidden to access this resource' do
+        delete "/api/epics/#{epic.id}", headers: headers
+
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+
+    context 'User with role :guest' do
+      it 'can not delete a story' do
+        delete "/api/epics/#{epic.id}", headers: headers_with_guest_crendetionals
+
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    context 'User with role :user' do
+      it 'can not delete storie' do
+        delete "/api/epics/#{epic.id}", headers: headers_with_user_crendetionals
+
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    context 'User with role :admin' do
+      it 'deletes any story' do
+        delete "/api/epics/#{epic.id}", headers: headers_with_admin_crendetionals
+
+        expect(response).to have_http_status(:no_content)
+      end
+    end
+  end
 end
